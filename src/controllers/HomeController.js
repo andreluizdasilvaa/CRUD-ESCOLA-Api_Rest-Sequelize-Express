@@ -14,4 +14,4 @@ class HomeController {
     }
 }
 
-export default new HomeController().index;
+export default new HomeController;
