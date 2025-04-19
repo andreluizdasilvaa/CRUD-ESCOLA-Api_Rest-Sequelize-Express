@@ -6,6 +6,12 @@ class UserController {
         try {
             const { nome, email, password } = req.body;
 
+            if (!req.body.password || req.body.password.length < 6) {
+                return res.status(400).json({
+                    errors: ['Senha obrigatória e deve ter pelo menos 6 caracteres.']
+                });
+            }
+
             const novoUser = await User.create({
                 nome: nome,
                 email: email,
@@ -122,7 +128,8 @@ class UserController {
             }
 
             await user.destroy()
-            return res.status(200).json(user, { msg: "Usuario deletado com sucesso."});
+            const { id, nome, email } = user;
+            return res.status(200).json({ id, nome, email }, { msg: "Usuario deletado com sucesso."});
         } catch (e) {
             res.status(400).json({
                 errors: e.errors.map(err => {return err.message})

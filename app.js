@@ -1,5 +1,10 @@
 import dotenv from 'dotenv';
 dotenv.config();
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 import './src/database/index.js';
 
@@ -21,6 +26,7 @@ class App {
     middlewares() {
         this.app.use(express.urlencoded({extended: true}));
         this.app.use(express.json());
+        this.app.use(express.static(resolve(__dirname, 'uploads')));
     }
 
     routes() {

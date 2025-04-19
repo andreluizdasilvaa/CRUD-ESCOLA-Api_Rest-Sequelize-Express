@@ -1,20 +1,42 @@
 import Aluno from "../models/Aluno.js";
+import Foto from "../models/Foto.js";
 
 class AlunoController {
     async index(req, res) {
-        const alunos = await Aluno.findAll();
-        res.status(200).json(alunos)
+        try {
+            const alunos = await Aluno.findAll({
+                attributes: ['id', 'nome', 'sobrenome', 'email', 'idade', 'peso', 'altura'],
+                order: [['id', 'DESC'], [Foto, 'id', 'DESC']],
+                include: {
+                    model: Foto,
+                    attributes: ['url', 'filename']
+                }
+            });
+            res.status(200).json(alunos)
+        } catch (e) {
+            return res.status(400).json({
+                errors: e.errors ? e.errors.map(err => err.message) : [e.message]
+            });
+        }
     }
 
     async store(req, res) {
         try {
-            const aluno = await Aluno.create(req.body);
+            const { email } = req.body;
+            const userExists = await Aluno.findOne({ where: { email } });
 
-            return res.json(aluno);
+            if (userExists) {
+                return res.status(400).json({
+                    errors: ['E-mail já cadastrado.']
+                });
+            }
+            
+            const novoUser = await Aluno.create(req.body);
+            return res.json(novoUser);
         } catch (e) {
-            res.status(400).json({
-                errors: e.errors.map(err => {return err.message})
-            })
+            return res.status(400).json({
+                errors: e.errors ? e.errors.map(err => err.message) : [e.message]
+            });
         }
     }
 
@@ -28,7 +50,14 @@ class AlunoController {
                 });
             }
 
-            const aluno = await Aluno.findByPk(id);
+            const aluno = await Aluno.findByPk(id, {
+                attributes: ['id', 'nome', 'sobrenome', 'email', 'idade', 'peso', 'altura'],
+                order: [['id', 'DESC'], [Foto, 'id', 'DESC']],
+                include: {
+                    model: Foto,
+                    attributes: ['url', 'filename']
+                }
+            });
 
             if (!aluno) {
                 return res.status(400).json({
@@ -38,9 +67,9 @@ class AlunoController {
 
             return res.json(aluno);
         } catch (e) {
-            res.status(400).json({
-                errors: e.errors.map(err => {return err.message})
-            })
+            return res.status(400).json({
+                errors: e.errors ? e.errors.map(err => err.message) : [e.message]
+            });
         }
     }
 
@@ -66,8 +95,8 @@ class AlunoController {
             return res.json(aluno);
         } catch (e) {
             res.status(400).json({
-                errors: e.errors.map(err => {return err.message})
-            })
+                errors: e.errors ? e.errors.map(err => err.message) : [e.message]
+            });
         }
     }
 

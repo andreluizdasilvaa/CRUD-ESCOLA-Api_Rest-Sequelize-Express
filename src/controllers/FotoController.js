@@ -16,20 +16,28 @@ class FotoController {
                 })
             }
 
-            const { originalname, filename } = req.file;
-            const { aluno_id } = req.body;
+            try {
+                const { originalname, filename } = req.file;
+                const { aluno_id } = req.body;
 
-            // Verifica se o aluno existe
-            const aluno = await Aluno.findByPk(Number(aluno_id));
-            if (!aluno) {
-                return res.status(400).json({
-                    errors: ['Aluno não encontrado.'],
-                });
+                // Verifica se o aluno existe
+                const aluno = await Aluno.findByPk(Number(aluno_id));
+
+                if (!aluno) {
+                    return res.status(400).json({
+                        errors: ['Aluno não encontrado.'],
+                    });
+                }
+
+                const foto = await Foto.create({ originalname, filename, aluno_id })
+
+                return res.json(foto);
+            } catch (e) {
+                res.status(400).json({
+                    errors: e.errors.map(err => {return err.message})
+                })
             }
-
-            const foto = await Foto.create({ originalname, filename, aluno_id })
-
-            return res.json(foto);
+            
         })
     }
 }
