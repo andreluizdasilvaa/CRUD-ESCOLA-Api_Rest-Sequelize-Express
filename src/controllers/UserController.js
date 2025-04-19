@@ -16,7 +16,9 @@ class UserController {
                 res.send('Erro no model User');
             }
 
-            return res.status(200).json(novoUser);
+            const { id, nome: userName, email: userEmail } = novoUser;
+
+            return res.status(200).json({ id, nome: userName, email: userEmail });
         } catch (e) {
             res.status(400).json({
                 errors: e.errors.map(err => {return err.message})
@@ -27,7 +29,7 @@ class UserController {
     // Index
     async index(req, res) {
         try {
-            const users = await User.findAll();
+            const users = await User.findAll({ attributes: ['id', 'nome', 'email']});
             return res.json(users)
         } catch (e) {
             res.status(400).json({
@@ -39,13 +41,14 @@ class UserController {
     // Show
     async show(req, res) {
         try {
-            if (!req.params) {
+            const { id } = req.params;
+            if (!id) {
                 return res.status(400).json({
                     errors: ['ID não fornecido.']
                 });
             }
 
-            const user = await User.findByPk(req.params);
+            const user = await User.findByPk(id, { attributes: ['id', 'nome', 'email']});
 
             if (!user) {
                 return res.status(404).json({
@@ -64,13 +67,14 @@ class UserController {
     // Update
     async update(req, res) {
         try {
-            if(!req.params.id) {
+            const userID = req.userId
+            if(!userID) {
                 return res.status(400).json({
                     errors: ['ID não fornecido.']
                 })
             }
 
-            const user = await User.findByPk(req.params.id);
+            const user = await User.findByPk(userID);
 
             if (!user) {
                 return res.status(404).json({
@@ -85,7 +89,13 @@ class UserController {
                 email: email,
             });
 
-            return res.status(200).json(novosDados);
+            let userFormatado = {
+                id: novosDados.id,
+                nome: novosDados.nome,
+                email: novosDados.email
+            }
+
+            return res.status(200).json(userFormatado);
         } catch (e) {
             res.status(400).json({
                 errors: e.errors.map(err => {return err.message})
@@ -96,13 +106,14 @@ class UserController {
     // Delete
     async delete(req, res) {
         try {
-            if(!req.params.id) {
+            const userId = req.userId;
+            if(!userId) {
                 return res.status(400).json({
                     errors: ['ID não fornecido.']
                 })
             }
 
-            const user = await User.findByPk(req.params.id);
+            const user = await User.findByPk(userId, { attributes: ['id', 'nome', 'email'] });
 
             if (!user) {
                 return res.status(404).json({
@@ -111,7 +122,7 @@ class UserController {
             }
 
             await user.destroy()
-            return res.status(200).json(user);
+            return res.status(200).json(user, { msg: "Usuario deletado com sucesso."});
         } catch (e) {
             res.status(400).json({
                 errors: e.errors.map(err => {return err.message})
