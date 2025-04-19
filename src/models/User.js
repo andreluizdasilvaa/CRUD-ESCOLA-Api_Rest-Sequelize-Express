@@ -49,13 +49,17 @@ export default class User extends Model {
 
         return this;
     }
+
+    passwordIsValid(password) {
+        return bcrypt.compare(password, this.password_hash);
+    }
 }
 
 /* 
-o tipo Sequelize.VIRTUAL define um campo que existe
-apenas na aplicação, não é salvo no banco de dados. 
-Ele serve para armazenar valores temporários, como 
-senhas em texto puro, que você usa só para 
-processar ou validar antes de salvar o hash no 
-banco.
+    O tipo Sequelize.VIRTUAL define um campo que existe
+    apenas na aplicação, não é salvo no banco de dados. 
+    Ele serve para armazenar valores temporários, como 
+    senhas em texto puro, que você usa só para 
+    processar ou validar antes de salvar o hash no 
+    banco.
 */
