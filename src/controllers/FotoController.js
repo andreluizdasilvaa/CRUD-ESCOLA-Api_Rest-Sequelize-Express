@@ -1,9 +1,9 @@
 import multer from 'multer';
-
 import multerConfig from '../config/multer.js'
-
 import Foto from '../models/Foto.js';
 import Aluno from '../models/Aluno.js';
+import fs from 'fs/promises'; // adicione isso
+import { resolve } from 'path'; // adicione isso
 
 const upload = multer(multerConfig).single('photo');
 
@@ -24,6 +24,12 @@ class FotoController {
                 const aluno = await Aluno.findByPk(Number(aluno_id));
 
                 if (!aluno) {
+                    const filePath = resolve('uploads', 'images', filename);
+                    try {
+                        await fs.unlink(filePath);
+                    } catch {
+                        // Se não conseguir deletar, apenas ignore
+                    }
                     return res.status(400).json({
                         errors: ['Aluno não encontrado.'],
                     });

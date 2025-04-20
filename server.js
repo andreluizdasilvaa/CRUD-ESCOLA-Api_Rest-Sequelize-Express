@@ -1,8 +1,11 @@
 import app from './app.js';
+import dotenv from 'dotenv';
+dotenv.config();
+import appConfig from './src/config/appConfig.js';
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log()
     console.log(`Escutando na porta: ${PORT}`);
-    console.log(`CTRL + CLIQUE:  http://localhost:${PORT}`);
+    console.log(`CTRL + CLIQUE:  ${appConfig.url}`);
 }) 

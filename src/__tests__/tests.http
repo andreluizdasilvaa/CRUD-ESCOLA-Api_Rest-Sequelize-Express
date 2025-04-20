@@ -1,0 +1,122 @@
+###
+// filepath: c:\Users\André\Desktop\API-REST_projeto_Udemy-js-ts\src\test\test.http
+###
+# Arquivo de testes para API REST - Escola
+#
+# Utilize este arquivo com a extensão REST Client do VS Code.
+# 
+# Instruções:
+# 1. Execute cada requisição individualmente (clique em "Send Request" acima de cada bloco).
+# 2. Para rotas protegidas, faça login primeiro (requisição de "Login") e copie o token JWT retornado.
+# 3. Cole o token no campo "Authorization: Bearer" das requisições protegidas.
+# 4. Para enviar foto, coloque o arquivo "foto.jpg" na mesma pasta deste arquivo ou ajuste o caminho.
+# 5. Altere os IDs conforme necessário, de acordo com os retornos das requisições de criação.
+###
+
+### Criar usuário
+POST http://localhost:3001/users
+Content-Type: application/json
+
+{
+  "nome": "João",
+  "email": "joao@email.com",
+  "password": "123456"
+}
+
+###
+
+### Login (gerar token JWT)
+POST http://localhost:3001/tokens
+Content-Type: application/json
+
+{
+  "email": "joao@email.com",
+  "password": "123456"
+}
+
+###
+
+# Copie o token gerado acima e substitua em Authorization abaixo
+
+### Atualizar usuário autenticado
+PATCH http://localhost:3001/users
+Content-Type: application/json
+Authorization: Bearer [token]
+
+{
+  "nome": "João Atualizado",
+  "email": "joao@email.com"
+}
+
+###
+
+### Deletar usuário autenticado
+DELETE http://localhost:3001/users
+Authorization: Bearer [token]
+
+###
+
+### Criar aluno
+POST http://localhost:3001/alunos
+Content-Type: application/json
+Authorization: Bearer [token]
+
+{
+  "nome": "Aluno Teste",
+  "sobrenome": "Silva",
+  "email": "aluno@email.com",
+  "idade": 20,
+  "peso": 70.5,
+  "altura": 1.75
+}
+
+###
+
+### Listar todos os alunos
+GET http://localhost:3001/alunos
+Authorization: Bearer [token]
+
+###
+
+### Buscar aluno por ID
+GET http://localhost:3001/alunos/1
+Authorization: Bearer [token]
+###
+
+### Atualizar aluno por ID
+PUT http://localhost:3001/alunos/1
+Content-Type: application/json
+Authorization: Bearer [token]
+
+{
+  "nome": "Aluno Atualizado",
+  "sobrenome": "Silva",
+  "email": "aluno@email.com",
+  "idade": 21,
+  "peso": 72,
+  "altura": 1.76
+}
+
+###
+
+### Deletar aluno por ID
+DELETE http://localhost:3001/alunos/1
+Authorization: Bearer [token]
+
+###
+
+### Enviar foto para aluno
+POST http://localhost:3001/fotos
+Authorization: Bearer [token]
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="photo"; filename="foto.jpg"
+Content-Type: image/jpeg
+
+< ./foto.jpg
+--boundary
+Content-Disposition: form-data; name="aluno_id"
+
+1
+--boundary--
