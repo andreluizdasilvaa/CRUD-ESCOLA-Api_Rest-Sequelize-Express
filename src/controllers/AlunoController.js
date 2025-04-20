@@ -1,3 +1,6 @@
+import fs from 'fs/promises';
+import { resolve } from 'path';
+
 import Aluno from "../models/Aluno.js";
 import Foto from "../models/Foto.js";
 
@@ -90,6 +93,22 @@ class AlunoController {
                     errors: ['Aluno não existe.']
                 });
             }
+
+            // Busca todas as fotos do aluno
+            const fotos = await Foto.findAll({ where: { aluno_id: id } });
+
+            // Remove os arquivos físicos das fotos
+            for (const foto of fotos) {
+                const filePath = resolve('uploads', 'images', foto.filename);
+                try {
+                    await fs.unlink(filePath);
+                } catch (err) {
+                    // Se o arquivo não existir, ignora o erro
+                }
+            }
+
+            // Remove os registros das fotos do banco
+            await Foto.destroy({ where: { aluno_id: id } });
 
             await aluno.destroy();
             return res.json(aluno);
