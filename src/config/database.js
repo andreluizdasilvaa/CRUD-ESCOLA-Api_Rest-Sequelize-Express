@@ -16,11 +16,7 @@ export default {
         'updatedAt': 'updated_at'
     },
     dialectOptions: {
-        timezone: 'Etc/GMT+3',
-        ssl: {
-            require: true,
-            rejectUnauthorized: false 
-        }
+        timezone: 'Etc/GMT+3'
     },
     timezone: 'Etc/GMT+3'
 }
