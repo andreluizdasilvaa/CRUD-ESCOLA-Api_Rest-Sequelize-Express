@@ -1,5 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
+import cors from 'cors';
+import helmet from 'helmet';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -16,6 +18,20 @@ import tokenRoutes from './src/routes/tokenRoutes.js'
 import alunoRoutes from './src/routes/alunoRoutes.js';
 import fotoRoutes from './src/routes/fotoRoutes.js';
 
+const whiteList = [
+    'https://student-management-nu-six.vercel.app/',
+]
+
+const corsOptions = {
+    origin: function (origin, cb) {
+        if(whiteList.indexOf(origin) !== -1 || !origin) {
+            cb(null, true);
+        } else {
+            cb(new Error('Not allowed by CORS'));
+        }
+    }
+}
+
 class App {
     constructor() {
         this.app = express();
@@ -24,6 +40,8 @@ class App {
     }
 
     middlewares() {
+        this.app.use(cors(corsOptions));
+        this.app.use(helmet(whiteList));
         this.app.use(express.urlencoded({extended: true}));
         this.app.use(express.json());
         this.app.use(express.static(resolve(__dirname, 'uploads')));
